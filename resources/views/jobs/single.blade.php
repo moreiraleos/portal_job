@@ -16,6 +16,21 @@
         </div>
     </div>
 </section>
+@if (\Session::has('save'))
+<div class="alert alert-success">
+    <p>{!! \Session::get('save') !!}</p>
+</div>
+@endif
+@if (\Session::has('apply'))
+<div class="alert alert-success">
+    <p>{!! \Session::get('apply') !!}</p>
+</div>
+@endif
+@if (\Session::has('applied'))
+<div class="alert alert-success">
+    <p>{!! \Session::get('applied') !!}</p>
+</div>
+@endif
 <section class="site-section">
     <div class="container">
         <div class="row align-items-center mb-5">
@@ -61,27 +76,56 @@
                             <li class="d-flex align-items-start mb-2"><span class="icon-check_circle mr-2 text-muted"></span><span>{{ $job->other_benefitis }}</span></li>
                         </ul>
                     </div>
+                    @if(Auth::user())
                     <div class="row mb-5">
                         <div class="col-6">
                             <form action="{{ route('save.job') }}" method="POST">
                                 @csrf
-                                <input type="text" value="{{ $job->id }}" name="job_id">
-                                <input type="text" value="{{ Auth::user()->id }}" name="user_id">
-                                <input type="text" value="{{ $job->image }}" name="job_image">
-                                <input type="text" value="{{ $job->job_title }}" name="job_title">
-                                <input type="text" value="{{ $job->job_region }}" name="job_region">
-                                <input type="text" value="{{ $job->job_type }}" name="job_type">
-                                <input type="text" value="{{ $job->company_name }}" name="job_company">
+                                <input type="hidden" value="{{ $job->id }}" name="job_id">
+                                <input type="hidden" value="{{ Auth::user()->id }}" name="user_id">
+                                <input type="hidden" value="{{ $job->image }}" name="job_image">
+                                <input type="hidden" value="{{ $job->job_title }}" name="job_title">
+                                <input type="hidden" value="{{ $job->job_region }}" name="job_region">
+                                <input type="hidden" value="{{ $job->job_type }}" name="job_type">
+                                <input type="hidden" value="{{ $job->company_name }}" name="job_company">
+                                @if($savedJob > 0 )
+                                <button type="submit" class="btn btn-block btn-light btn-md " disabled>You saved this job</button>
+                                @else
                                 <button name="submit" type="submit" class="btn btn-block btn-light btn-md"><i class="icon-heart"></i>Save Job</button>
+                                @endif
                             </form>
+
                             <!--add text-danger to it to make it read-->
                         </div>
                         <div class="col-6">
-                            <button class="btn btn-block btn-primary btn-md">Apply Now</button>
+                            <form action="{{ route('apply.job') }}" method="POST">
+                                @csrf
+                                <input type="hidden" value="{{ $job->id }}" name="job_id">
+                                <input type="hidden" value="{{ Auth::user()->cv }}" name="cv">
+                                <input type="hidden" value="{{ Auth::user()->id }}" name="user_id">
+                                <input type="hidden" value="{{ Auth::user()->email }}" name="email">
+                                <input type="hidden" value="{{ $job->image }}" name="job_image">
+                                <input type="hidden" value="{{ $job->job_title }}" name="job_title">
+                                <input type="hidden" value="{{ $job->job_region }}" name="job_region">
+                                <input type="hidden" value="{{ $job->job_type }}" name="job_type">
+                                <input type="hidden" value="{{ $job->company_name }}" name="company">
+                                @if($appliedJob > 0 )
+                                <button type="submit" class="btn btn-block btn-light btn-md " disabled>You applied for this job</button>
+                                @else
+                                <button name="submit" type="submit" class="btn btn-block btn-primary btn-md">Apply Now</button>
+                                @endif
+                            </form>
                         </div>
                     </div>
+                    @else
+                    <a href="{{ route('login') }}" class="btn btn-primary btn-md">Login to apply for this job</a>
+                    @endif
                 </div>
+
+
                 <div class="col-lg-4">
+
+
                     <div class="bg-light p-3 border rounded mb-4">
                         <h3 class="text-primary  mt-3 h5 pl-3 mb-3 ">Job Summary</h3>
                         <ul class="list-unstyled pl-3 mb-0">
@@ -95,6 +139,8 @@
                             <li class="mb-2"><strong class="text-black">Application Deadline:</strong> {{ $job->application_deadline }}</li>
                         </ul>
                     </div>
+
+
                     <div class="bg-light p-3 border rounded">
                         <h3 class="text-primary  mt-3 h5 pl-3 mb-3 ">Share</h3>
                         <div class="px-3">
@@ -103,6 +149,18 @@
                             <a href="https://www.linkedin.com/sharing/share-offsite/?url=" class="pt-3 pb-3 pr-3 pl-0"><span class="icon-linkedin"></span></a>
                         </div>
                     </div>
+
+                    @if(Auth::user())
+                    <div class="bg-light p-3 border mt-5 rounded mb-4">
+                        <h3 class="text-primary  h5 pl-3 mb-3 ">Categories</h3>
+                        <ul class="list-unstyled pl-3 mb-0">
+                            @foreach ($categories as $category)
+                            <li class="mb-2"> <a class="text-decoration-none" href="{{ route("categories.single",$category->id) }}">{{ $category->name }} ({{ $category->total }})</a></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
                 </div>
             </div>
         </div>

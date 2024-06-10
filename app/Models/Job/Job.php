@@ -17,13 +17,17 @@ class Job extends Model
         'job_type',
         'vacancy',
         'experience',
+        'company_name',
+        'published_on',
         'salary',
         'gender',
         'application_deadline',
         'job_description',
         'responsibilities',
         'education',
+        'category',
         'other_benefitis',
+        'education_experience',
         'image',
     ];
 
